@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+
+	<extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.ngo.eide.NgoStartup">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ngo.eide.perspectives.NgoEngPerspective"
+            icon="icons/releng_gears.gif"
+            id="org.ngo.eide.perspectives.NgoEngPerspective"
+            name="NGO Engineering" fixed="true">
+      </perspective>
+   </extension>
+   
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Sample Category"
+            id="NGO.EIDE.commands.category">
+      </category>
+      <command
+            name="publish"
+            categoryId="NGO.EIDE.commands.category"
+            id="NGO.EIDE.commands.sampleCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="NGO.EIDE.commands.sampleCommand"
+            class="org.ngo.eide.handlers.NgoHandler">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="NGO.EIDE.commands.sampleCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               label="NGO Menu"
+               mnemonic="M"
+               id="NGO.EIDE.menus.sampleMenu">
+            <command
+                  commandId="NGO.EIDE.commands.sampleCommand"
+                  mnemonic="S"
+                  id="NGO.EIDE.menus.sampleCommand">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="NGO.EIDE.toolbars.sampleToolbar">
+            <command
+                  commandId="NGO.EIDE.commands.sampleCommand"
+                  icon="icons/sample.gif"
+                  tooltip="publish"
+                  id="NGO.EIDE.toolbars.sampleCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   
+   <extension
+	    point="org.eclipse.ui.perspectiveExtensions" >
+	    <perspectiveExtension
+	        targetID="*" >
+	            <hiddenMenuItem id="org.eclipse.ui.file.export"/>
+	            <hiddenMenuItem id="org.eclipse.ui.file.import"/>
+	            <!--<hiddenMenuItem id="org.eclipse.ui.window.customizePerspective"/>-->
+	            <hiddenMenuItem id="org.eclipse.ui.window.closePerspective"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.closeAllPerspectives"/>
+	            <hiddenMenuItem id="org.eclipse.ui.editors"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.splitEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.newEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.newWindow"/>
+	            <hiddenMenuItem id="org.eclipse.ui.appearance"/>
+	            <hiddenMenuItem id="org.eclipse.ui.ToggleCoolbarAction"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.fullscreenmode"/>
+	            
+	            <hiddenMenuItem id="shortcuts"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.showSystemMenu"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.showViewMenu"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.quickAccess"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.maximizePart"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.minimizePart"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.activateEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.nextEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.previousEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.switchToEditor"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.nextView"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.previousView"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.nextPerspective"/>
+	            <hiddenMenuItem id="org.eclipse.ui.window.previousPerspective"/>
+	           
+	            <hiddenMenuItem id="org.eclipse.ui.help.quickStartAction"/>
+	            <hiddenMenuItem id="org.eclipse.ui.help.helpContents"/>
+	            <hiddenMenuItem id="org.eclipse.ui.help.helpSearch"/>
+	            <hiddenMenuItem id="org.eclipse.ui.help.dynamicHelp"/>
+	            <hiddenMenuItem id="org.eclipse.mylyn.wikitext.ui.editor.showCheatSheetCommand"/>
+	            <hiddenMenuItem id="org.eclipse.ui.help.tipsAndTricksAction"/>
+	            <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.bug.report"/>
+	            <hiddenMenuItem id="org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction"/>
+	            <hiddenMenuItem id="org.eclipse.oomph.setup.editor.perform"/>
+	            <hiddenMenuItem id="org.eclipse.equinox.p2.ui.sdk.update"/>
+	            <hiddenMenuItem id="org.eclipse.equinox.p2.ui.sdk.install"/>
+	            <hiddenMenuItem id="org.eclipse.equinox.p2.ui.sdk.installationDetails"/>
+	            <hiddenMenuItem id="org.eclipse.epp.mpc.ui.command.showMarketplaceWizard"/>
+	            
+	            <hiddenMenuItem id="breakpointTypes"/>
+	            <hiddenMenuItem id="org.eclipse.debug.ui.actions.BreakpointTypesContribution"/>
+	            <hiddenMenuItem id="org.eclipse.debug.ui.commands.RunToLine"/>
+	            <hiddenMenuItem id="org.eclipse.debug.ui.commands.ToggleStepFilters"/>
+	            <hiddenMenuItem id="org.eclipse.debug.internal.ui.actions.RunHistoryMenuAction"/>
+	            <hiddenMenuItem id="org.eclipse.debug.internal.ui.actions.DebugHistoryMenuAction"/>
+	            <hiddenMenuItem id="org.eclipse.ui.externaltools.ExternalToolMenuDelegateMenu"/>
+	            
+	            <hiddenMenuItem id="openProject"/>
+	            <hiddenMenuItem id="closeProject"/>
+	            <hiddenMenuItem id="org.eclipse.ui.project.buildAll"/>
+	            <hiddenMenuItem id="org.eclipse.jface.action.MenuManager"/>
+	            <hiddenMenuItem id="org.eclipse.ui.internal.ide.actions.BuildSetMenu"/>
+	            <hiddenMenuItem id="org.eclipse.jdt.ui.generate.javadoc"/>
+	            <hiddenMenuItem id="org.eclipse.ui.project.properties"/>
+	            
+	            <hiddenMenuItem id="org.eclipse.search.menu"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.openSearchDialog"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.openFileSearchPage"/>
+	            <hiddenMenuItem id="textSearchSubMenu"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.performTextSearchWorkspace"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.performTextSearchProject"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.performTextSearchFile"/>
+	            <hiddenMenuItem id="org.eclipse.search.ui.performTextSearchWorkingSet"/>
+	           	           
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.goInto"/>
+	           <hiddenMenuItem id="goTo"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.back"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.forward"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.up"/>
+	           <hiddenMenuItem id="org.eclipse.wst.sse.ui.goto.matching.bracket"/>
+	           <hiddenMenuItem id="GoToNextSibling"/>
+	           <hiddenMenuItem id="GoToPreviousSibling"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.command.goToPreviousUnread"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.command.goToNextUnread"/>
+	           <hiddenMenuItem id="org.eclipse.jdt.ui.navigate.gototype"/>
+	           <hiddenMenuItem id="org.eclipse.jdt.ui.navigate.gotopackage"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.goToResource"/>
+	           <hiddenMenuItem id="org.eclipse.jdt.debug.ui.command.OpenFromClipboard"/>
+	           <hiddenMenuItem id="org.eclipse.ant.ui.open.declaration.command"/>
+	           <hiddenMenuItem id="org.eclipse.ant.ui.openExternalDoc"/>
+	           <hiddenMenuItem id="org.eclipse.jdt.ui.navigate.open.type.in.hierarchy"/>
+	           <hiddenMenuItem id="org.eclipse.core.internal.registry.ConfigurationElementHandle@2868"/>
+	           <hiddenMenuItem id="org.eclipse.oomph.setup.editor.open.menu.dynamic"/>
+	           <hiddenMenuItem id="org.eclipse.oomph.setup.editor.openLog"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.command.openTask"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.command.activateTask"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.tasks.ui.command.deactivateAllTasks"/>
+	           <hiddenMenuItem id="org.eclipse.jdt.ui.edit.text.java.gotoBreadcrumb"/>
+	           <hiddenMenuItem id="showIn"/>
+	           <hiddenMenuItem id="viewsShowIn"/>
+	           <hiddenMenuItem id="org.eclipse.mylyn.task.ui.editor.QuickOutline"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.next"/>
+	           <hiddenMenuItem id="org.eclipse.ui.navigate.previous"/>
+	           <hiddenMenuItem id="org.eclipse.ui.edit.text.gotoLastEditPosition"/>
+	           
+	           <hiddenMenuItem id="org.eclipse.wst.xsd.ui.refactor.makeElementGlobal"/>
+	           <hiddenMenuItem id="org.eclipse.wst.xsd.ui.refactor.makeTypeGlobal"/>
+	           
+	                    
+	           <hiddenToolBarItem id="org.eclipse.mylyn.tasks.ui.command.openTask"/>
+	    </perspectiveExtension>
+	</extension>
+
+</plugin>
