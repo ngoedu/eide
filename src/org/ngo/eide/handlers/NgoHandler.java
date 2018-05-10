@@ -5,6 +5,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.ngo.activator.NgoActivator;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
@@ -17,10 +18,14 @@ public class NgoHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+		
+		NgoActivator.logInfo(this, "trigger tomcat deploy");
+		
 		MessageDialog.openInformation(
 				window.getShell(),
 				"NGO.eclipse.IDE",
 				"Hello, NGO Eclipse");
+		
 		return null;
 	}
 }
