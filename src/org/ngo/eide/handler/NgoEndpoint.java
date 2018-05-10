@@ -31,10 +31,12 @@ import org.eclipse.jdt.debug.core.IJavaThread;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
@@ -47,14 +49,31 @@ import org.ngo.ether.endpoint.EndpointCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NgoHandler implements EndpointCallback {
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.widgets.Control;
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(NgoHandler.class);
+/**
+ * https://sourceforge.net/p/editbox/code/HEAD/tree/plugin/pm.eclipse.editbox/Trunk/src/pm/eclipse/editbox/impl/BoxDecoratorImpl.java#l158
+ * 
+ * @author Administrator
+ *
+ */
+public class NgoEndpoint implements EndpointCallback {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(NgoEndpoint.class);
 
 	protected static final String ID_NGO_PERSPECTIVE = "org.ngo.eide.perspectives.NgoEngPerspective";
 	
 
-	public final static NgoHandler instance = new NgoHandler();
+	public final static NgoEndpoint instance = new NgoEndpoint();
 	protected static final String JAVA = "java"; //$NON-NLS-1$
 	protected static final String JAVA_EXTENSION = ".java"; //$NON-NLS-1$
 	protected static final String LAUNCHCONFIGURATIONS = "launchConfigurations"; //$NON-NLS-1$
@@ -62,7 +81,7 @@ public class NgoHandler implements EndpointCallback {
 
 	private IWorkbench workbench;
 
-	public NgoHandler() {
+	public NgoEndpoint() {
 
 		while (true) {
 			// loop until the workbench is instantiated
@@ -172,6 +191,46 @@ public class NgoHandler implements EndpointCallback {
 			});
 
 		}
+		
+		/**
+		 * https://stackoverflow.com/questions/8786089/how-to-get-path-of-current-selected-file-in-eclipse-plugin-development
+		 */
+		
+		if (window1 != null && message.startsWith("mark:")) {
+
+			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+				public void run() {
+					
+					IWorkbench workbench = PlatformUI.getWorkbench();
+					IWorkbenchWindow window =  workbench == null ? null : workbench.getActiveWorkbenchWindow();
+					IWorkbenchPage activePage = window == null ? null : window.getActivePage();
+
+					IEditorPart editor =  activePage == null ? null : activePage.getActiveEditor();
+					
+					StyledText boxText  = getStyledText(editor);;
+					Rectangle r0 = boxText.getClientArea();
+
+					if (r0.width < 1 || r0.height < 1)
+						return;
+
+					int xOffset = boxText.getHorizontalPixel();
+					int yOffset = boxText.getTopPixel();
+
+					Image newImage = new Image(null, r0.width, r0.height);
+					GC gc = new GC(newImage);
+
+					// fill background
+					Color bc= new Color(null, new RGB(181,230,29));
+					if (bc!=null){
+						Rectangle rec = newImage.getBounds();		
+						//fillRectangle(bc, gc, rec.x, rec.y, rec.width, rec.height);
+						gc.fillGradientRectangle(rec.x, rec.y, rec.width, rec.height, false);
+						boxText.setBackgroundImage(newImage);
+					}
+				}
+			});
+
+		}
 
 		// HXY: implement debug/run config
 		if (message.equalsIgnoreCase("config")) {
@@ -210,6 +269,16 @@ public class NgoHandler implements EndpointCallback {
 			}
 		}
 
+	}
+	
+	protected StyledText getStyledText(final IWorkbenchPart editorPart) {
+		if (editorPart != null) {
+			Object obj = editorPart.getAdapter(Control.class);
+			if (obj instanceof StyledText)
+				return (StyledText) obj;
+		}
+
+		return null;
 	}
 
 	/**
