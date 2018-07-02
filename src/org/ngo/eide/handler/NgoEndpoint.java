@@ -46,6 +46,7 @@ import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
 import org.ngo.eide.NgoStartup;
 import org.ngo.ether.endpoint.EndpointCallback;
+import org.ngo.ether.endpoint.EndpointSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,10 +70,10 @@ import org.eclipse.swt.widgets.Control;
 public class NgoEndpoint implements EndpointCallback {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(NgoEndpoint.class);
-
+	public static final short ngoID = 9;
 	protected static final String ID_NGO_PERSPECTIVE = "org.ngo.eide.perspectives.NgoEngPerspective";
 	
-
+	private EndpointSupport client;
 	public final static NgoEndpoint instance = new NgoEndpoint();
 	protected static final String JAVA = "java"; //$NON-NLS-1$
 	protected static final String JAVA_EXTENSION = ".java"; //$NON-NLS-1$
@@ -164,6 +165,16 @@ public class NgoEndpoint implements EndpointCallback {
 		// projects
 		IProject[] projects = wsroot.getProjects();
 
+		if (window1 != null && message.equalsIgnoreCase("exit")) {
+			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+				public void run() {
+					PlatformUI.getWorkbench().saveAllEditors(false);
+					if (PlatformUI.getWorkbench().close())
+						client.sendMessage("<EIDE status='closed'/>",ngoID , (short)1);
+				}
+			});
+		}
+		
 		if (window1 != null && message.startsWith("code:")) {
 
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
@@ -312,6 +323,11 @@ public class NgoEndpoint implements EndpointCallback {
 	public void error(String message) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setClient(EndpointSupport client) {
+		this.client = client;
+		
 	}
 
 }
