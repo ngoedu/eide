@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 public class NgoStartup implements IStartup {
 	private final static Logger LOGGER = LoggerFactory.getLogger(NgoStartup.class);
-	private EndpointSupport client;
 	private EndpointHandler handler;
 
 	private void startAetherEndpoint() {
@@ -32,10 +31,11 @@ public class NgoStartup implements IStartup {
 		String host = System.getProperty("ngo.bridge.host", "127.0.0.1");
 
 		SocketAddress address = new InetSocketAddress(host, port);
-		int ngoID = 9;
+		
 
-		handler = new EndpointHandler(NgoEndpoint.instance, (short) ngoID);
-		client = new EndpointSupport("IDE", handler);
+		handler = new EndpointHandler(NgoEndpoint.instance, (short) NgoEndpoint.ngoID);
+		EndpointSupport client = new EndpointSupport("IDE", handler);
+		NgoEndpoint.instance.setClient(client);
 
 		if (!client.connect(address, false)) {
 			LOGGER.error(String.format("failed to connect to %s", address));
