@@ -47,6 +47,8 @@ import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
 import org.ngo.eide.NgoStartup;
 import org.ngo.ether.endpoint.EndpointCallback;
 import org.ngo.ether.endpoint.EndpointSupport;
+import org.ngo.milestone.MileStoneEntry;
+import org.ngo.milestone.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,50 +115,7 @@ public class NgoEndpoint implements EndpointCallback {
 	@Override
 	public void messageReceived(String message) {
 		IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
-
-		IWorkbenchWindow window1 = windows[0];
-
-		// get all the perspectives
-		IPerspectiveDescriptor[] prs = workbench.getPerspectiveRegistry().getPerspectives();
-
-		// find a specific perspective
-		IPerspectiveDescriptor prdebug = workbench.getPerspectiveRegistry()
-				.findPerspectiveWithId("org.eclipse.debug.ui.DebugPerspective");
-		IPerspectiveDescriptor prjava = workbench.getPerspectiveRegistry()
-				.findPerspectiveWithId("org.eclipse.jdt.ui.JavaPerspective");
-
-		String userprd = IDebugUIConstants.ID_DEBUG_PERSPECTIVE;
-		if (message.equalsIgnoreCase("javap")) {
-			userprd = "org.eclipse.jdt.ui.JavaPerspective";
-		} else if (message.equalsIgnoreCase("debugp")) {
-			userprd = IDebugUIConstants.ID_DEBUG_PERSPECTIVE;
-		} else if (message.equalsIgnoreCase("ngo")) {
-			userprd = ID_NGO_PERSPECTIVE;
-		}
-
-		final IPerspectiveDescriptor prdes = workbench.getPerspectiveRegistry().findPerspectiveWithId(userprd);
-
-		// do perspective switch here.
-		/*
-		 * Display.getDefault().syncExec(new Runnable() { public void run() {
-		 * try { workbench.showPerspective(prdes.getId(), window1); } catch
-		 * (WorkbenchException e) {} } });
-		 */
-
-		// HXY: below is the PC version
-		// http://www.programcreek.com/java-api-examples/index.php?source_dir=grails-ide-master/org.grails.ide.eclipse.groovy.debug.tests/jdt-debug-tests-src/org/eclipse/jdt/debug/tests/ProjectCreationDecorator.java
-		DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
-			public void run() {
-				IWorkbenchPage activePage = workbench.getActiveWorkbenchWindow().getActivePage();
-				activePage.setPerspective(prdes);
-				// hide variables and breakpoints view to reduce simultaneous
-				// conflicting requests on debug targets
-				IViewReference ref = activePage.findViewReference(IDebugUIConstants.ID_VARIABLE_VIEW);
-				// activePage.hideView(ref);
-				ref = activePage.findViewReference(IDebugUIConstants.ID_BREAKPOINT_VIEW);
-				// activePage.hideView(ref);
-			}
-		});
+		IWorkbenchWindow window0 = windows[0];
 
 		// workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -165,7 +124,7 @@ public class NgoEndpoint implements EndpointCallback {
 		// projects
 		IProject[] projects = wsroot.getProjects();
 
-		if (window1 != null && message.equalsIgnoreCase("exit")) {
+		if (window0 != null && message.equalsIgnoreCase("$EXIT")) {
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
 					PlatformUI.getWorkbench().saveAllEditors(false);
@@ -175,28 +134,49 @@ public class NgoEndpoint implements EndpointCallback {
 			});
 		}
 		
-		if (window1 != null && message.startsWith("code:")) {
+		//https://stackoverflow.com/questions/33010029/eclipse-plugin-copy-file
+		if (window0 != null && message.startsWith("$MILESTONE:")) {
 
+			MileStoneEntry msEntry = Parser.parseMileStone(message.replace("$MILESTONE:", ""));
+			
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
-					IFile class1 = null;
 					try {
+						//create or open a project
+						IProject project = wsroot.getProject(msEntry.getProject());
+						if (!project.exists())
+					        project.create(null); //not sure if java project being created.
+						if (!project.isOpen())
+					        project.open(null);
+						
 						IResource[] rs = wsroot.members();
+						/*
 						IFolder src = projects[0].getFolder("src");
 						IFolder package1 = src.getFolder("package1");
 						class1 = package1.getFile("class1.java");
-						if (!class1.exists()) {
+						*/
+						
+						//create folder if needed
+						IFolder folder = project.getFolder(msEntry.getPath());
+						if (!folder.exists()) {
+					        folder.create(true, true, null);
 						}
-
-						// 3. insert some code into java file
-						byte[] bytes = message.replace("code:", "").getBytes();
+					
+						//create file or update file 
+						IFile fileToUpdate = folder.getFile(msEntry.getFile());
+						byte[] bytes = msEntry.getContent().getBytes();
 						ByteArrayInputStream source = new ByteArrayInputStream(bytes);
-						// enable below when needed
-						class1.setContents(source, true, true, null);
-
-					} catch (CoreException e) {
-						// TODO Auto-generated catch block
+						if (fileToUpdate.exists()) {
+							fileToUpdate.setContents(source, true, true, null);
+						} else {
+							fileToUpdate.create(source, true, null);
+						}
+						
+						//send back response to remote peer
+						client.sendMessage("<EIDE status='msdone'/>",ngoID , (short)1);
+					} catch (Exception e) {
 						e.printStackTrace();
+						client.sendMessage("<EIDE status='msfailed' error="+e.getMessage()+"/>",ngoID , (short)1);
 					}
 				}
 			});
@@ -207,7 +187,7 @@ public class NgoEndpoint implements EndpointCallback {
 		 * https://stackoverflow.com/questions/8786089/how-to-get-path-of-current-selected-file-in-eclipse-plugin-development
 		 */
 		
-		if (window1 != null && message.startsWith("mark:")) {
+		if (window0 != null && message.startsWith("mark:")) {
 
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
