@@ -185,5 +185,4 @@
 	           <hiddenToolBarItem id="org.eclipse.mylyn.tasks.ui.command.openTask"/>
 	    </perspectiveExtension>
 	</extension>
-
 </plugin>

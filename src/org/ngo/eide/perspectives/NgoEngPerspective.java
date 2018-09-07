@@ -173,7 +173,7 @@ public class NgoEngPerspective implements IPerspectiveFactory {
 	private void addNewWizardShortcuts() {
 		// factory.addNewWizardShortcut("org.eclipse.team.cvs.ui.newProjectCheckout");//NON-NLS-1
 		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");// NON-NLS-1
-		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");// NON-NLS-1
+		factory.addNewWizardShortcut("org.eclipse.ui.wizards.new.class");// NON-NLS-1
 	}
 
 	private void addViewShortcuts() {
