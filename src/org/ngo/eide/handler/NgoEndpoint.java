@@ -1,6 +1,7 @@
 package org.ngo.eide.handler;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,13 +10,16 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -40,10 +44,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.registry.PerspectiveDescriptor;
+import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
+import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.ngo.eide.NgoStartup;
 import org.ngo.ether.endpoint.EndpointCallback;
 import org.ngo.ether.endpoint.EndpointSupport;
@@ -130,6 +137,39 @@ public class NgoEndpoint implements EndpointCallback {
 					PlatformUI.getWorkbench().saveAllEditors(false);
 					if (PlatformUI.getWorkbench().close())
 						client.sendMessage("<EIDE status='closed'/>",ngoID , (short)1);
+				}
+			});
+		}
+		
+		if (window0 != null && message.startsWith("$ADDPROJ")) {
+			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+				public void run() {
+
+					try {
+						String PROJECT_PATH = message.split("=")[1];
+						IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(new Path(PROJECT_PATH+"\\.project"));
+
+				        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(description.getName());
+				        project.create(description, null);
+				        project.open(null);
+				        IOverwriteQuery overwriteQuery = new IOverwriteQuery() {
+				            public String queryOverwrite(String file) {
+				                return ALL;
+				            }
+				        };
+
+				        ImportOperation importOperation = new ImportOperation(project.getFullPath(), new File(PROJECT_PATH),   FileSystemStructureProvider.INSTANCE, overwriteQuery);
+				        importOperation.setCreateContainerStructure(false);
+				        importOperation.setCreateLinks(false);
+				        importOperation.run(new NullProgressMonitor());
+					}
+					catch (Exception e) {
+						client.sendMessage("<EIDE proj='add-failed'/>",ngoID , (short)1);
+						return;
+					}
+					
+					client.sendMessage("<EIDE proj='added'/>",ngoID , (short)1);
+						
 				}
 			});
 		}
