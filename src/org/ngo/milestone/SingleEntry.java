@@ -1,11 +1,12 @@
 package org.ngo.milestone;
 
-public class MileStoneEntry {
+public class SingleEntry {
 	
 	private int Id;
 	private String Title;
 	private String Project;
 	private String Path;
+	private String Name;
 	private String File;
 	private String Content;
 	public int getId() {
@@ -19,6 +20,13 @@ public class MileStoneEntry {
 	}
 	public void setTitle(String title) {
 		Title = title;
+	}
+	
+	public String getName() {
+		return Name;
+	}
+	public void setName(String name) {
+		Name = name;
 	}
 	public String getPath() {
 		return Path;

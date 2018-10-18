@@ -1,0 +1,222 @@
+<?xml version="1.0" ?><Revision>
+			<ID>1</ID>
+			<Title>ver1</Title>
+			<LinkID>1</LinkID>
+			<RefID>1</RefID>
+			<Status>0</Status>
+			<Files>
+				<File>
+					<Name>fn.js</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\1</Path>
+					<Content>
+						<![CDATA[/**
+ *MileStone1
+ */
+
+function add(a, b) {
+	return a+b;
+}
+
+function ad2d(a, b) {
+	return a+b;
+}
+
+alert("a");
+/*
+ * 中文的注释
+ * 
+ * */
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>index.html</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\1</Path>
+					<Content>
+						<![CDATA[<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Milestone 1</title>
+</head>
+<body>
+
+</body>
+</html>]]>
+					</Content>
+				</File>
+				<File>
+					<Name>style.css</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\1</Path>
+					<Content>
+						<![CDATA[@CHARSET "UTF-8";
+/*MileStone1*/
+body {background-color: red; margin-top:#111; }
+.div1 {color:red;}
+.u-main {background-color:#111;}
+.main-div {margin-left: 1 1 1 1;}
+h2 {color:blue;}
+
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>WEB-INF\src\Console.java</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\1</Path>
+					<Content>
+						<![CDATA[/**
+ * Milestone 1
+ * @author Administrator
+ *
+ */
+public class Console {
+	public static void main(String args[]) {
+		String dt = new java.util.Date().toGMTString();
+		System.out.println(dt);
+		System.out.println(new java.util.Date());
+	}
+}
+
+]]>
+					</Content>
+				</File>
+			</Files>
+		</Revision>
+		<Revision>
+			<ID>2</ID>
+			<Title>ver2</Title>
+			<LinkID>1</LinkID>
+			<RefID>1</RefID>
+			<Status>0</Status>
+			<Files>
+				<File>
+					<Name>fn.js</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\2</Path>
+					<Content>
+						<![CDATA[@@ -13,9 +13,9 @@
+ tone
+-1
++2
+ %0d%0a *
+@@ -113,36 +113,13 @@
+ rt(%22
+-a
++ms-2
+ %22);%0d%0a
+-/*%0d%0a * %e4%b8%ad%e6%96%87%e7%9a%84%e6%b3%a8%e9%87%8a%0d%0a * %0d%0a * */%0d%0a
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>index.html</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\2</Path>
+					<Content>
+						<![CDATA[@@ -71,9 +71,9 @@
+ one 
+-1
++2
+ %3c/ti
+@@ -95,16 +95,46 @@
+ %3cbody%3e%0d%0a
++ %09%3ch1%3eNew Head added MS-2%3c/h1%3e
+ %0d%0a%3c/body
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>style.css</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\2</Path>
+					<Content>
+						<![CDATA[@@ -23,17 +23,17 @@
+ ileStone
+-1
++2
+ */%0d%0abody
+@@ -125,17 +125,17 @@
+ color:#1
+-1
++2
+ 1;%7d%0d%0a.ma
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>WEB-INF\src\Console.java</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\2</Path>
+					<Content>
+						<![CDATA[]]>
+					</Content>
+				</File>
+			</Files>
+		</Revision>
+		<Revision>
+			<ID>3</ID>
+			<Title>ver3</Title>
+			<LinkID>1</LinkID>
+			<RefID>1</RefID>
+			<Status>0</Status>
+			<Files>
+				<File>
+					<Name>fn.js</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\3</Path>
+					<Content>
+						<![CDATA[@@ -112,14 +112,14 @@
+ ert(%22ms-
+-2
++3
+ %22);%0d%0a
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>index.html</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\3</Path>
+					<Content>
+						<![CDATA[@@ -67,17 +67,17 @@
+ lestone 
+-2
++3
+ %3c/title%3e
+@@ -119,17 +119,71 @@
+ dded
+- MS-2%3c/h1
++%3c/h1%3e%0d%0a %09%3cdiv%3eMS-3%3c/div%3e%0d%0a%09%3cdiv%3eMS-3.1%3c/div%3e%0d%0a%09%3cdiv%3eMS-3.2%3c/div
+ %3e%0d%0a%3c
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>style.css</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\3</Path>
+					<Content>
+						<![CDATA[@@ -23,17 +23,17 @@
+ ileStone
+-2
++3
+ */%0d%0abody
+@@ -124,17 +124,17 @@
+ -color:#
+-1
++2
+ 21;%7d%0d%0a.m
+]]>
+					</Content>
+				</File>
+				<File>
+					<Name>WEB-INF\src\Console.java</Name>
+					<Path>D:\NGO\client\cdat\sweb-a01\pkgin/ms\3</Path>
+					<Content>
+						<![CDATA[@@ -15,9 +15,9 @@
+ one 
+-1
++3
+ %0d%0a *
+@@ -235,16 +235,26 @@
+ l.Date()
++ + %22,MS-3%22
+ );%0d%0a%09%7d%0d%0a
+]]>
+					</Content>
+				</File>
+			</Files>
+		</Revision>

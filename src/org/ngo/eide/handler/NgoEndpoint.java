@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -54,8 +55,9 @@ import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.ngo.eide.NgoStartup;
 import org.ngo.ether.endpoint.EndpointCallback;
 import org.ngo.ether.endpoint.EndpointSupport;
-import org.ngo.milestone.MileStoneEntry;
+import org.ngo.milestone.SingleEntry;
 import org.ngo.milestone.Parser;
+import org.ngo.milestone.Revision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +133,81 @@ public class NgoEndpoint implements EndpointCallback {
 		// projects
 		IProject[] projects = wsroot.getProjects();
 
+		
+		//test approach for ms
+		//https://stackoverflow.com/questions/33010029/eclipse-plugin-copy-file
+		//http://anglemoshao.iteye.com/blog/1714333
+		if (window0 != null && message.startsWith("$TMS:")) {
+
+			String cmd = message.substring("$TMS:".length());
+			
+			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+				public void run() {
+					try {
+						
+						IProject project = wsroot.getProject("tms_sweb-a01");
+						if (!project.exists())
+					        project.create(null); //not sure if java project being created.
+						if (!project.isOpen())
+					        project.open(null);
+						
+						/*
+						IResource[] rs = wsroot.members();
+						try {
+							IResource[] members = project.members();
+							for (IResource member : members) {
+								if (member instanceof IFolder) {
+									//
+								} else if (member instanceof IFile) {
+									IFile file = (IFile) member;
+									project.getFile("fn1.js")
+								}
+							}
+						} catch (CoreException e) {
+							
+						}
+						*/
+						
+						
+						
+						//create file at root folder
+						IFile rootFile = project.getFile("fn.js");
+						byte[] bytes1 = "function fn() {alert('a');}".getBytes();
+						ByteArrayInputStream source1 = new ByteArrayInputStream(bytes1);						
+						if (!rootFile.exists()) {
+							rootFile.create(source1, true, null);
+						} else {
+							 rootFile.setContents(source1, true, true, null);
+						}
+						
+						
+						//create or set content of file on specific folder
+						IFolder folder = project.getFolder("src");
+						if (!folder.exists()) {
+					        folder.create(false, true, null);
+						}
+										
+						IFile targetFile = folder.getFile("test.js");
+						byte[] bytes = "alert('a');".getBytes();
+						ByteArrayInputStream source = new ByteArrayInputStream(bytes);
+						if (targetFile.exists()) {
+							targetFile.setContents(source, true, true, null);
+						} else {
+							targetFile.create(source, true, null);
+						}
+					
+						
+						//send back response to remote peer
+						client.sendMessage("<EIDE mileStone='success'/>",ngoID , (short)4);
+					} catch (Exception e) {
+						e.printStackTrace();
+						client.sendMessage("<EIDE mileStone='failed' error="+e.getMessage()+"/>",ngoID , (short)4);
+					}
+				}
+			});
+
+		}
+				
 		if (window0 != null && message.equalsIgnoreCase("$EXIT")) {
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
@@ -177,46 +254,19 @@ public class NgoEndpoint implements EndpointCallback {
 		//https://stackoverflow.com/questions/33010029/eclipse-plugin-copy-file
 		if (window0 != null && message.startsWith("$MILESTONE:")) {
 
-			MileStoneEntry msEntry = Parser.parseMileStone(message.replace("$MILESTONE:", ""));
+			Revision revision = Parser.Deserilize2(message.substring("$MILESTONE:".length()));
 			
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
 					try {
-						//create or open a project
-						IProject project = wsroot.getProject(msEntry.getProject());
-						if (!project.exists())
-					        project.create(null); //not sure if java project being created.
-						if (!project.isOpen())
-					        project.open(null);
-						
-						IResource[] rs = wsroot.members();
-						/*
-						IFolder src = projects[0].getFolder("src");
-						IFolder package1 = src.getFolder("package1");
-						class1 = package1.getFile("class1.java");
-						*/
-						
-						//create folder if needed
-						IFolder folder = project.getFolder(msEntry.getPath());
-						if (!folder.exists()) {
-					        folder.create(true, true, null);
+						for (SingleEntry entry : revision.getFiles()) {
+							buildMileStoneEntires(wsroot, revision.getProject(), entry);
 						}
-					
-						//create file or update file 
-						IFile fileToUpdate = folder.getFile(msEntry.getFile());
-						byte[] bytes = msEntry.getContent().getBytes();
-						ByteArrayInputStream source = new ByteArrayInputStream(bytes);
-						if (fileToUpdate.exists()) {
-							fileToUpdate.setContents(source, true, true, null);
-						} else {
-							fileToUpdate.create(source, true, null);
-						}
-						
 						//send back response to remote peer
-						client.sendMessage("<EIDE status='msdone'/>",ngoID , (short)1);
+						client.sendMessage("<EIDE mileStone='success'/>",ngoID , (short)1);
 					} catch (Exception e) {
 						e.printStackTrace();
-						client.sendMessage("<EIDE status='msfailed' error="+e.getMessage()+"/>",ngoID , (short)1);
+						client.sendMessage("<EIDE mileStone='failed' error="+e.getMessage()+"/>",ngoID , (short)1);
 					}
 				}
 			});
@@ -226,8 +276,8 @@ public class NgoEndpoint implements EndpointCallback {
 		/**
 		 * https://stackoverflow.com/questions/8786089/how-to-get-path-of-current-selected-file-in-eclipse-plugin-development
 		 */
-		
-		if (window0 != null && message.startsWith("mark:")) {
+		//TODO:
+		if (window0 != null && message.startsWith("$MARKUP")) {
 
 			DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 				public void run() {
@@ -263,43 +313,47 @@ public class NgoEndpoint implements EndpointCallback {
 
 		}
 
-		// HXY: implement debug/run config
-		if (message.equalsIgnoreCase("config")) {
-			try {
-				// 10. launch configuration
-				IProject pro = ResourcesPlugin.getWorkspace().getRoot().getProject("test");
-				if (pro.exists()) {
-					// pro.delete(true, true, null);
-				}
-				// create project and import source
-				// IJavaProject fJavaProject =
-				// JavaProjectHelper.createJavaProject("DebugTests", "bin");
-				// IPackageFragmentRoot src =
-				// JavaProjectHelper.addSourceContainer(fJavaProject, "src");
-
-				IFolder folder = pro.getFolder("launchConfigurations");
-				if (folder.exists()) {
-					folder.delete(true, null);
-				}
-				folder.create(true, true, null);
-
-				// delete any existing launch configs
-				ILaunchConfiguration[] configs = getLaunchManager().getLaunchConfigurations();
-				for (int i = 0; i < configs.length; i++) {
-					configs[i].delete();
-				}
-
-				createLaunchConfiguration(JavaCore.create(projects[0]), "SimpleTests");
-
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	}
+	
+	/**
+	 * https://blog.csdn.net/dreajay/article/details/17119365
+	 * @param wsroot
+	 * @param projectName
+	 * @param msEntry
+	 * @throws CoreException
+	 */
+	protected void buildMileStoneEntires(IWorkspaceRoot wsroot, String projectName, SingleEntry msEntry) throws CoreException {
+		
+		//create or open a project operation
+		IProject project = wsroot.getProject(projectName);
+		if (!project.exists())
+	        project.create(null); //not sure if java project being created.
+		if (!project.isOpen())
+	        project.open(null);
+		
+		IResource[] rs = wsroot.members();
+		/*
+		IFolder src = projects[0].getFolder("src");
+		IFolder package1 = src.getFolder("package1");
+		class1 = package1.getFile("class1.java");
+		*/
+		
+		
+		//create folder if needed
+		IFolder folder = project.getFolder(msEntry.getPath());
+		if (!folder.exists()) {
+	        folder.create(true, true, null);
 		}
-
+	
+		//create file or update file 
+		IFile targetFile = folder.getFile(msEntry.getName());
+		byte[] bytes = msEntry.getContent().getBytes();
+		ByteArrayInputStream source = new ByteArrayInputStream(bytes);
+		if (targetFile.exists()) {
+			targetFile.setContents(source, true, true, null);
+		} else {
+			targetFile.create(source, true, null);
+		}
 	}
 	
 	protected StyledText getStyledText(final IWorkbenchPart editorPart) {
