@@ -1,4 +1,4 @@
-package org.ngo.milestone;
+package org.ngo.eide.milestones;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;

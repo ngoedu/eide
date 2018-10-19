@@ -1,4 +1,4 @@
-package org.ngo.eide.handler;
+package org.ngo.eide.host;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;

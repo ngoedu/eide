@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.progress.UIJob;
-import org.ngo.eide.handler.NgoEndpoint;
+import org.ngo.eide.host.NgoEndpoint;
 import org.ngo.ether.endpoint.EndpointHandler;
 import org.ngo.ether.endpoint.EndpointSupport;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class NgoStartup implements IStartup {
 		SocketAddress address = new InetSocketAddress(host, port);
 		
 
-		handler = new EndpointHandler(NgoEndpoint.instance, (short) NgoEndpoint.ngoID);
+		handler = new EndpointHandler(NgoEndpoint.instance, (short) NgoEndpoint.NGO_ID);
 		EndpointSupport client = new EndpointSupport("IDE", handler);
 		NgoEndpoint.instance.setClient(client);
 
