@@ -91,7 +91,7 @@ public class NgoEndpoint implements EndpointCallback {
 				DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 					public void run() {
 						String eideCmd = message.substring(0, message.indexOf("="));
-						String info = message.substring(eideCmd.length());
+						String info = message.substring(eideCmd.length()+1);
 						
 						try {
 							Command cmdObj = COMMAND_MAP.get(eideCmd);
