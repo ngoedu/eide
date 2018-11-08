@@ -5,13 +5,10 @@ import java.io.ByteArrayInputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.ngo.eide.host.NgoEndpoint;
 import org.ngo.eide.milestones.Parser;
 import org.ngo.eide.milestones.Revision;
 import org.ngo.eide.milestones.SingleEntry;
@@ -42,7 +39,7 @@ public class MileStoneCommand implements Command {
 	 * @param msEntry
 	 * @throws CoreException
 	 */
-	protected void buildMileStoneEntires(IWorkspaceRoot wsroot, String projectName, SingleEntry msEntry) throws CoreException {
+	protected void buildMileStoneEntires(IWorkspaceRoot wsroot, String projectName, SingleEntry msEntry) throws Exception {
 		
 		//create or open a project operation
 		IProject project = wsroot.getProject(projectName);
@@ -51,28 +48,51 @@ public class MileStoneCommand implements Command {
 		if (!project.isOpen())
 	        project.open(null);
 		
-		IResource[] rs = wsroot.members();
-		/*
-		IFolder src = projects[0].getFolder("src");
-		IFolder package1 = src.getFolder("package1");
-		class1 = package1.getFile("class1.java");
-		*/
-		
-		
-		//create folder if needed
-		IFolder folder = project.getFolder(msEntry.getPath());
-		if (!folder.exists()) {
-	        folder.create(true, true, null);
-		}
-	
-		//create file or update file 
-		IFile targetFile = folder.getFile(msEntry.getName());
-		byte[] bytes = msEntry.getContent().getBytes();
-		ByteArrayInputStream source = new ByteArrayInputStream(bytes);
-		if (targetFile.exists()) {
-			targetFile.setContents(source, true, true, null);
+		//check folder
+		if (msEntry.getPath().equalsIgnoreCase(msEntry.getName())) {
+			buildRootEntry(project, msEntry.getName(), msEntry);
 		} else {
-			targetFile.create(source, true, null);
+			String folderName = msEntry.getPath().replaceAll(msEntry.getName(), "");
+			//create folder if needed
+			IFolder folder = createFolderRecusive(folderName, project);
+			
+			//create file or update file 
+			IFile targetFile = folder.getFile(msEntry.getName());
+			byte[] bytes = msEntry.getContent().getBytes();
+			ByteArrayInputStream source = new ByteArrayInputStream(bytes);
+			if (targetFile.exists()) {
+				targetFile.setContents(source, true, true, null);
+			} else {
+				targetFile.create(source, true, null);
+			}	
+		}	
+	}
+	
+	private IFolder createFolderRecusive(String folderName, IProject project) throws Exception {
+		String[] folders = folderName.split("\\\\");
+		IFolder pFolder = null;
+		for(int i=0; i< folders.length; i++) {
+			if (i==0) {
+				pFolder = project.getFolder(folders[0]);		
+			} else {
+				pFolder = pFolder.getFolder(folders[i]);
+			}
+			
+			if (!pFolder.exists()) {
+				pFolder.create(true, true, null);
+			}
+		}
+		return pFolder;
+	}
+	
+	private void buildRootEntry(IProject project, String fileName, SingleEntry entry) throws Exception {
+		IFile file = project.getFile(fileName);
+		byte[] bytes = entry.getContent().getBytes();
+		ByteArrayInputStream source = new ByteArrayInputStream(bytes);
+		if (file.exists()) {
+			file.setContents(source, true, true, null);
+		} else {
+			file.create(source, true, null);
 		}
 	}
 
