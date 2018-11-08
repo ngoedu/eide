@@ -58,7 +58,7 @@ public class MileStoneCommand implements Command {
 			
 			//create file or update file 
 			IFile targetFile = folder.getFile(msEntry.getName());
-			byte[] bytes = msEntry.getContent().getBytes();
+			byte[] bytes = msEntry.getContent().getBytes("UTF-8");
 			ByteArrayInputStream source = new ByteArrayInputStream(bytes);
 			if (targetFile.exists()) {
 				targetFile.setContents(source, true, true, null);
@@ -87,7 +87,7 @@ public class MileStoneCommand implements Command {
 	
 	private void buildRootEntry(IProject project, String fileName, SingleEntry entry) throws Exception {
 		IFile file = project.getFile(fileName);
-		byte[] bytes = entry.getContent().getBytes();
+		byte[] bytes = entry.getContent().getBytes("UTF-8");
 		ByteArrayInputStream source = new ByteArrayInputStream(bytes);
 		if (file.exists()) {
 			file.setContents(source, true, true, null);
