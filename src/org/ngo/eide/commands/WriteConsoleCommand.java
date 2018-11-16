@@ -8,18 +8,21 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.ngo.eide.host.NgoEndpoint;
 
 public class WriteConsoleCommand implements Command {
 
 	@Override
-	public void execute(String message) throws Exception{
+	public int execute(String message) throws Exception{
 		String color = message.substring(1, message.indexOf("]"));
 		String info = message.substring(message.indexOf("]")+1);
 		writeToConsole(color, info);
+		
+		return NgoEndpoint.NGONAT_SWEB_ID;
 
 	}
 	
-	private static final String NGO_CONSOLE_NAME = "NGO_WebConsole";
+	private static final String NGO_CONSOLE_NAME = "NGO_Web_Console";
 	/**
 	 * https://wiki.eclipse.org/FAQ_How_do_I_find_the_active_workbench_page%3F
 	 * @param message

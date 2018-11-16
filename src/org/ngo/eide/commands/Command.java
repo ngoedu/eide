@@ -11,5 +11,5 @@ public interface Command{
 	public static final String CONSOLE = "$CONSOLE";
 	
 	
-	public void execute(String message) throws Exception;
+	public int execute(String message) throws Exception;
 }

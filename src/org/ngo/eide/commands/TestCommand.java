@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 public class TestCommand implements Command {
 
 	@Override
-	public void execute(String message) throws Exception {
+	public int execute(String message) throws Exception {
 		
 		// workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -74,6 +74,7 @@ public class TestCommand implements Command {
 			targetFile.create(source, true, null);
 		}
 
+		return 0;
 	}
 
 }

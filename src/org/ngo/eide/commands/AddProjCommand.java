@@ -11,11 +11,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
 import org.eclipse.ui.wizards.datatransfer.ImportOperation;
+import org.ngo.eide.host.NgoEndpoint;
 
 public class AddProjCommand implements Command {
 
 	@Override
-	public void execute(String message) throws Exception{
+	public int execute(String message) throws Exception{
 		String projPath = message;
 		IProjectDescription description = ResourcesPlugin.getWorkspace().loadProjectDescription(new Path(projPath+"\\.project"));
 
@@ -32,6 +33,8 @@ public class AddProjCommand implements Command {
         importOperation.setCreateContainerStructure(false);
         importOperation.setCreateLinks(false);
         importOperation.run(new NullProgressMonitor());
+        
+        return NgoEndpoint.NGONAT_EIDECLIENT_ID;
         
 	}
 

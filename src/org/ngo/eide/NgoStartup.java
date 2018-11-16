@@ -33,7 +33,7 @@ public class NgoStartup implements IStartup {
 		SocketAddress address = new InetSocketAddress(host, port);
 		
 
-		handler = new EndpointHandler(NgoEndpoint.instance, (short) NgoEndpoint.NGO_ID);
+		handler = new EndpointHandler(NgoEndpoint.instance, (short) NgoEndpoint.NGOPUBLIC_EIDE_ID);
 		EndpointSupport client = new EndpointSupport("IDE", handler);
 		NgoEndpoint.instance.setClient(client);
 

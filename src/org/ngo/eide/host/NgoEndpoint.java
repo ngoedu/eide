@@ -40,8 +40,12 @@ import org.slf4j.LoggerFactory;
 public class NgoEndpoint implements EndpointCallback {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(NgoEndpoint.class);
-	public static final short NGO_ID = 9;
-	public static final short NGO_REMOTE_PEER_ID = 1;
+	public static final short NGOPUBLIC_EIDE_ID = 9;
+	public static final short NGOPUBLIC_PAD_ID = 1;
+	
+	public static final short  NGONAT_EIDECLIENT_ID = 11;
+	public static final short  NGONAT_GUIDER_ID = 12;
+	public static final short  NGONAT_SWEB_ID = 15;
 	
 	private HashMap<String, Command> COMMAND_MAP = new HashMap<String, Command>();
 	private EndpointSupport client;
@@ -88,6 +92,9 @@ public class NgoEndpoint implements EndpointCallback {
 
 	}
 
+	public void sendMessageTo(String message, short remote) {
+		client.sendMessage(message, NgoEndpoint.NGOPUBLIC_EIDE_ID , remote);
+	}
 	
 	/**
 	*	https://stackoverflow.com/questions/33010029/eclipse-plugin-copy-file
@@ -110,16 +117,16 @@ public class NgoEndpoint implements EndpointCallback {
 						
 						try {
 							Command cmdObj = COMMAND_MAP.get(eideCmd);
-							cmdObj.execute(info);
-							client.sendMessage(new EideResponse(eideCmd, "OK", "Done").toString(), NgoEndpoint.NGO_ID , NgoEndpoint.NGO_REMOTE_PEER_ID);
+							int natId = cmdObj.execute(info);
+							client.sendMessage(new EideResponse(eideCmd, "OK", natId, "Done").toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
 						} catch (Exception e) {
-							client.sendMessage(new EideResponse(eideCmd, "EXCEPTION",e.getMessage()).toString() , NgoEndpoint.NGO_ID , NgoEndpoint.NGO_REMOTE_PEER_ID);
+							client.sendMessage(new EideResponse(eideCmd, "EXCEPTION",NgoEndpoint.NGOPUBLIC_PAD_ID, e.getMessage()).toString() , NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
 						}
 					}
 				});
 			
 		} else {
-			client.sendMessage(EideResponse.EIDE_NOT_READY.toString(), NgoEndpoint.NGO_ID , NgoEndpoint.NGO_REMOTE_PEER_ID);
+			client.sendMessage(EideResponse.EIDE_NOT_READY.toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
 		}
 	}
 	

@@ -26,7 +26,7 @@ import org.eclipse.ui.PlatformUI;
 public class MarkCommand implements Command {
 
 	@Override
-	public void execute(String message) throws Exception {
+	public int execute(String message) throws Exception {
 		
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow window =  workbench == null ? null : workbench.getActiveWorkbenchWindow();
@@ -38,7 +38,7 @@ public class MarkCommand implements Command {
 		Rectangle r0 = boxText.getClientArea();
 
 		if (r0.width < 1 || r0.height < 1)
-			return;
+			return 0;
 
 		int xOffset = boxText.getHorizontalPixel();
 		int yOffset = boxText.getTopPixel();
@@ -54,7 +54,8 @@ public class MarkCommand implements Command {
 			gc.fillGradientRectangle(rec.x, rec.y, rec.width, rec.height, false);
 			boxText.setBackgroundImage(newImage);
 		}
-
+			
+		return 0;
 	}
 	
 	protected StyledText getStyledText(final IWorkbenchPart editorPart) {

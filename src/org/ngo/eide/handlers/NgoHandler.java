@@ -6,6 +6,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.ngo.activator.NgoActivator;
+import org.ngo.eide.host.EideResponse;
+import org.ngo.eide.host.NgoEndpoint;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
@@ -21,10 +23,14 @@ public class NgoHandler extends AbstractHandler {
 		
 		NgoActivator.logInfo(this, "trigger tomcat deploy");
 		
-		MessageDialog.openInformation(
+		/*MessageDialog.openInformation(
 				window.getShell(),
 				"NGO.eclipse.IDE",
 				"Hello, NGO Eclipse");
+		*/
+		
+		NgoEndpoint.instance.sendMessageTo(new EideResponse("$RESWEB", "NA", NgoEndpoint.NGONAT_SWEB_ID, "NA").toString(), NgoEndpoint.NGOPUBLIC_PAD_ID);
+
 		
 		return null;
 	}

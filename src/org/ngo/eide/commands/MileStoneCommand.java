@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.ngo.eide.host.NgoEndpoint;
 import org.ngo.eide.milestones.Parser;
 import org.ngo.eide.milestones.Revision;
 import org.ngo.eide.milestones.SingleEntry;
@@ -16,7 +17,7 @@ import org.ngo.eide.milestones.SingleEntry;
 public class MileStoneCommand implements Command {
 
 	@Override
-	public void execute(String message) throws Exception {
+	public int execute(String message) throws Exception {
 		
 		Revision revision = Parser.Deserilize2(message);
 		
@@ -29,7 +30,7 @@ public class MileStoneCommand implements Command {
 			buildMileStoneEntires(wsroot, revision.getProject(), entry);
 		}
 		//send back response to remote peer				
-
+		return NgoEndpoint.NGONAT_GUIDER_ID;
 	}
 	
 	/**
