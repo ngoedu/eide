@@ -26,7 +26,7 @@
             id="NGO.EIDE.commands.category">
       </category>
       <command
-            name="publish"
+            name="web部署"
             categoryId="NGO.EIDE.commands.category"
             id="NGO.EIDE.commands.sampleCommand">
       </command>
@@ -52,7 +52,7 @@
       <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=additions">
          <menu
-               label="NGO Menu"
+               label="服务器"
                mnemonic="M"
                id="NGO.EIDE.menus.sampleMenu">
             <command
@@ -68,8 +68,8 @@
                id="NGO.EIDE.toolbars.sampleToolbar">
             <command
                   commandId="NGO.EIDE.commands.sampleCommand"
-                  icon="icons/sample.gif"
-                  tooltip="publish"
+                  icon="icons/sample2.png"
+                  tooltip="web部署"
                   id="NGO.EIDE.toolbars.sampleCommand">
             </command>
          </toolbar>
