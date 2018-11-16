@@ -18,7 +18,7 @@ public class WriteConsoleCommand implements Command {
 		String info = message.substring(message.indexOf("]")+1);
 		writeToConsole(color, info);
 		
-		return NgoEndpoint.NGONAT_SWEB_ID;
+		return NgoEndpoint.NGOPUBLIC_PAD_ID;
 
 	}
 	
