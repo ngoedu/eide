@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -49,41 +50,49 @@ public class NgoEndpoint implements EndpointCallback {
 	
 	private HashMap<String, Command> COMMAND_MAP = new HashMap<String, Command>();
 	private EndpointSupport client;
-	private IWorkbench workbench;
 	public final static NgoEndpoint instance = new NgoEndpoint();
 	
-	protected static final String ID_NGO_PERSPECTIVE = "org.ngo.eide.perspectives.NgoEngPerspective";
-	
-
 
 	private NgoEndpoint() {
-		
 		//init command objects
 		COMMAND_MAP.put(Command.EXIT, new ExitCommand());
 		COMMAND_MAP.put(Command.ADDPROJ, new AddProjCommand());
 		COMMAND_MAP.put(Command.MILESTONE, new MileStoneCommand());
 		COMMAND_MAP.put(Command.MARK, new MarkCommand());
 		COMMAND_MAP.put(Command.TEST, new TestCommand());
-		COMMAND_MAP.put(Command.CONSOLE, new WriteConsoleCommand());
-
-		// loop until the workbench is instantiated
-		while (true) {
-			workbench = PlatformUI.getWorkbench();
-			if (workbench != null) {				
-				break;
-			} else
-				try {
-					LOGGER.debug("workbench is not available, loop again...");
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-			}
-		}
+		COMMAND_MAP.put(Command.CONSOLE, new WriteConsoleCommand());	
 	}
+	
+	private void workbenchActiveNotify() {
+		DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+			public void run() {
+				while (true) {
+					Display display = PlatformUI.getWorkbench().getDisplay();
+					if (display == null) {
+						try {Thread.sleep(100);	} catch (InterruptedException e) {}
+					} else {
+						Shell shell = display.getActiveShell();
+						if (shell != null) {
+							//shell ready, send out notification to specific remote peer. 
+							client.sendMessage(new EideResponse("$WBSREADY", "OK",NgoEndpoint.NGONAT_EIDECLIENT_ID, "workbench shell is ready").toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID, NgoEndpoint.NGOPUBLIC_PAD_ID);
+							return;
+						} else {
+							try {Thread.sleep(100);	} catch (InterruptedException e) {}
+						}
+					}
+				}
+			}
+		});
+	}
+
 
 	@Override
 	public void connected() {
-		// TODO Auto-generated method stub
-
+		// A REGA from bridge will trigger callback's connected which indicated - 
+		// that the aether channel between this peer and the remote bridge are connected and ready for DAT transmission.
+		
+		// notify when workbench is active
+		workbenchActiveNotify();
 	}
 
 	@Override
@@ -105,29 +114,27 @@ public class NgoEndpoint implements EndpointCallback {
 	@SuppressWarnings("restriction")
 	@Override
 	public void messageReceived(String message) {
-		
-		IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
-		IWorkbenchWindow window0 = windows[0];
-		
-		if (window0 != null) {
-				DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
-					public void run() {
-						String eideCmd = message.substring(0, message.indexOf("="));
-						String info = message.substring(eideCmd.length()+1);
-						
-						try {
-							Command cmdObj = COMMAND_MAP.get(eideCmd);
-							int natId = cmdObj.execute(info);
-							client.sendMessage(new EideResponse(eideCmd, "OK", natId, "Done").toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
-						} catch (Exception e) {
-							client.sendMessage(new EideResponse(eideCmd, "EXCEPTION",NgoEndpoint.NGOPUBLIC_PAD_ID, e.getMessage()).toString() , NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
-						}
+		DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
+			public void run() {
+				//exact cmd and parameters
+				String eideCmd = message.substring(0, message.indexOf("="));
+				String info = message.substring(eideCmd.length()+1);
+
+				//check workbench status
+				if (PlatformUI.getWorkbench().getDisplay().getShells() != null) {
+					try {						
+						Command cmdObj = COMMAND_MAP.get(eideCmd);
+						int natId = cmdObj.execute(info);
+						client.sendMessage(new EideResponse(eideCmd, "OK", natId, "Done").toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
+					} catch (Exception e) {
+						client.sendMessage(new EideResponse(eideCmd, "EXCEPTION",NgoEndpoint.NGOPUBLIC_PAD_ID, e.getMessage()).toString() , NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
 					}
-				});
-			
-		} else {
-			client.sendMessage(EideResponse.EIDE_NOT_READY.toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
-		}
+				//not ready.
+				} else {
+					client.sendMessage(EideResponse.EIDE_NOT_READY.toString(), NgoEndpoint.NGOPUBLIC_EIDE_ID , NgoEndpoint.NGOPUBLIC_PAD_ID);
+				}
+			}
+		});
 	}
 	
 	
