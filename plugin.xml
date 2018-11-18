@@ -68,21 +68,21 @@
                id="NGO.EIDE.toolbars.sampleToolbar">
             <command
                   commandId="NGO.EIDE.commands.sampleCommand"
-                  icon="icons/sample2.png"
+                  icon="icons/sample2.gif"
                   tooltip="web部署"
                   id="NGO.EIDE.toolbars.sampleCommand">
             </command>
          </toolbar>
       </menuContribution>
    </extension>
-   
+   <!--
    <extension
 	    point="org.eclipse.ui.perspectiveExtensions" >
 	    <perspectiveExtension
 	        targetID="*" >
 	            <hiddenMenuItem id="org.eclipse.ui.file.export"/>
 	            <hiddenMenuItem id="org.eclipse.ui.file.import"/>
-	            <!--<hiddenMenuItem id="org.eclipse.ui.window.customizePerspective"/>-->
+	            <hiddenMenuItem id="org.eclipse.ui.window.customizePerspective"/>
 	            <hiddenMenuItem id="org.eclipse.ui.window.closePerspective"/>
 	            <hiddenMenuItem id="org.eclipse.ui.window.closeAllPerspectives"/>
 	            <hiddenMenuItem id="org.eclipse.ui.editors"/>
@@ -185,4 +185,5 @@
 	           <hiddenToolBarItem id="org.eclipse.mylyn.tasks.ui.command.openTask"/>
 	    </perspectiveExtension>
 	</extension>
+	-->
 </plugin>
